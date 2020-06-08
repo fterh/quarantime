@@ -3,25 +3,30 @@ import queryString from "query-string";
 
 import Alert from "react-bootstrap/alert";
 import Container from "react-bootstrap/Container";
-import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import DatePicker from "react-datepicker";
+
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-datepicker/dist/react-datepicker.css";
+import "./overrides.css";
 
 interface Props {}
 
 interface State {
-  startTime: number | null;
-  endTime: number | null;
+  startTime: Date | null;
+  endTime: Date | null;
   inErrorState: boolean;
 }
 
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    const now = Date.now();
+    const minuteInMs = 60 * 1000;
     this.state = {
-      startTime: null,
-      endTime: null,
+      startTime: new Date(now),
+      endTime: new Date(now + minuteInMs),
       inErrorState: false,
     };
   }
@@ -31,7 +36,7 @@ class App extends React.Component<Props, State> {
       return null;
     }
 
-    return parseInt(rawTimestamp);
+    return new Date(rawTimestamp);
   }
 
   readQueryStrings() {
@@ -81,32 +86,29 @@ class App extends React.Component<Props, State> {
     }
   }
 
-  calculatePercentageCompleted(startTime: number, endTime: number) {
+  calculatePercentageCompleted(startTime: Date, endTime: Date) {
     // Force now to be within the start - end range
     // to prevent weird return values (<0 or >100)
-    const now = Math.max(Math.min(Date.now(), endTime), startTime);
+    const now = Math.max(
+      Math.min(Date.now(), endTime.getTime()),
+      startTime.getTime()
+    );
 
     // Prevent infinity return value
     if (endTime === startTime) {
       return 100;
     }
 
-    const completed = (now - startTime) / (endTime - startTime);
+    const completed =
+      (now - startTime.getTime()) / (endTime.getTime() - startTime.getTime());
     return Math.min(Math.floor(completed * 10000) / 100, 100);
   }
 
   handleInput(id: string) {
-    return (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = event.target.value;
-      const maybeNewTimestamp = this.validateAndRefineTimestamp(newValue);
-
-      if (maybeNewTimestamp == null) {
-        return;
-      }
-
+    return (newTime: Date | null) => {
       const newState = {
         ...this.state,
-        [id]: maybeNewTimestamp,
+        [id]: newTime,
       };
 
       this.setState(newState, this.validateState);
@@ -138,26 +140,36 @@ class App extends React.Component<Props, State> {
           )}
 
           <InputGroup style={{ marginBottom: "1rem" }}>
-            <InputGroup.Prepend>
-              <InputGroup.Text>Start</InputGroup.Text>
-            </InputGroup.Prepend>
-            <FormControl
-              id="startTime"
-              onChange={this.handleInput("startTime")}
-              placeholder="Epoch timestamp in ms"
-              value={this.state.startTime || ""}
-            />
+            <div style={{ display: "flex", margin: "auto" }}>
+              <InputGroup.Prepend>
+                <InputGroup.Text>Start time</InputGroup.Text>
+              </InputGroup.Prepend>
+              <DatePicker
+                selected={this.state.startTime}
+                onChange={this.handleInput("startTime")}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={1}
+                timeCaption="time"
+                dateFormat="MMMM d, yyyy h:mm aa"
+              />
+            </div>
           </InputGroup>
           <InputGroup>
-            <InputGroup.Prepend>
-              <InputGroup.Text>End</InputGroup.Text>
-            </InputGroup.Prepend>
-            <FormControl
-              id="endTime"
-              onChange={this.handleInput("endTime")}
-              placeholder="Epoch timestamp in ms"
-              value={this.state.endTime || ""}
-            />
+            <div style={{ display: "flex", margin: "auto" }}>
+              <InputGroup.Prepend>
+                <InputGroup.Text>End time</InputGroup.Text>
+              </InputGroup.Prepend>
+              <DatePicker
+                selected={this.state.endTime}
+                onChange={this.handleInput("endTime")}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={1}
+                timeCaption="time"
+                dateFormat="MMMM d, yyyy h:mm aa"
+              />
+            </div>
           </InputGroup>
         </Container>
       </div>
