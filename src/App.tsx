@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import InputGroup from "react-bootstrap/InputGroup";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import DatePicker from "react-datepicker";
+import Countdown from "./Countdown";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -94,6 +95,13 @@ class App extends React.Component<Props, State> {
     this.encodeHashFragment();
   }
 
+  tick() {
+    // This is trivial enough to skip validateState
+    this.setState({
+      now: new Date(),
+    });
+  }
+
   componentDidMount() {
     let maybeState;
     try {
@@ -112,6 +120,9 @@ class App extends React.Component<Props, State> {
     }
 
     this.encodeHashFragment();
+    setInterval(() => {
+      this.tick();
+    }, 1000);
   }
 
   calculatePercentageCompleted(startTime: Date, endTime: Date) {
@@ -154,7 +165,7 @@ class App extends React.Component<Props, State> {
 
     return (
       <div className="App" style={{ margin: "2rem 0" }}>
-        <Container fluid="md">
+        <Container fluid="sm" style={{ textAlign: "center" }}>
           <ProgressBar
             style={{ height: "2rem", marginBottom: "3rem" }}
             label={`${percentageCompleted}%`}
@@ -163,42 +174,49 @@ class App extends React.Component<Props, State> {
             variant="success"
           />
 
-          {this.state.inErrorState && (
+          {this.state.inErrorState ? (
             <Alert variant="danger">You have entered invalid values</Alert>
+          ) : (
+            <Countdown
+              now={this.state.now}
+              startTime={this.state.startTime}
+              endTime={this.state.endTime}
+            />
           )}
-
-          <InputGroup style={{ marginBottom: "1rem" }}>
-            <div style={{ display: "flex", margin: "auto" }}>
-              <InputGroup.Prepend>
-                <InputGroup.Text>Start time</InputGroup.Text>
-              </InputGroup.Prepend>
-              <DatePicker
-                selected={this.state.startTime}
-                onChange={this.handleInput("startTime")}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                timeCaption="time"
-                dateFormat="MMMM d, yyyy h:mm aa"
-              />
-            </div>
-          </InputGroup>
-          <InputGroup>
-            <div style={{ display: "flex", margin: "auto" }}>
-              <InputGroup.Prepend>
-                <InputGroup.Text>End time</InputGroup.Text>
-              </InputGroup.Prepend>
-              <DatePicker
-                selected={this.state.endTime}
-                onChange={this.handleInput("endTime")}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                timeCaption="time"
-                dateFormat="MMMM d, yyyy h:mm aa"
-              />
-            </div>
-          </InputGroup>
+          <Container style={{ margin: "1rem" }}>
+            <InputGroup style={{ marginBottom: "1rem" }}>
+              <div style={{ display: "flex", margin: "auto" }}>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>Start time</InputGroup.Text>
+                </InputGroup.Prepend>
+                <DatePicker
+                  selected={this.state.startTime}
+                  onChange={this.handleInput("startTime")}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="time"
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                />
+              </div>
+            </InputGroup>
+            <InputGroup>
+              <div style={{ display: "flex", margin: "auto" }}>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>End time</InputGroup.Text>
+                </InputGroup.Prepend>
+                <DatePicker
+                  selected={this.state.endTime}
+                  onChange={this.handleInput("endTime")}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="time"
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                />
+              </div>
+            </InputGroup>
+          </Container>
         </Container>
       </div>
     );
