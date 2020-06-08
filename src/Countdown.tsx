@@ -42,21 +42,26 @@ const calculateCountdown = (now: Date, endTime: Date): CountdownDetails => {
 
 export default (props: CountdownProps) => {
   if (props.startTime == null || props.endTime == null) {
-    return <h1>-</h1>;
+    return null;
   }
 
-  if (props.now.getTime() >= props.endTime.getTime()) {
-    return <h1>🎉</h1>;
+  const countdownCompleted = props.now.getTime() >= props.endTime.getTime();
+
+  if (countdownCompleted) {
+    return (
+      <span role="img" aria-label="party popper">
+        🎉🎉🎉
+      </span>
+    );
   }
 
   const countdownDetails = calculateCountdown(props.now, props.endTime);
 
   return (
-    <h1>
-      {`${countdownDetails.daysRemaining}d,
-      ${countdownDetails.hoursRemaining}h,
-      ${countdownDetails.minutesRemaining}m,
-      ${countdownDetails.secondsRemaining}s`}
-    </h1>
+    <>
+      {`${countdownDetails.daysRemaining}d ${countdownDetails.hoursRemaining}h
+      ${countdownDetails.minutesRemaining}m ${countdownDetails.secondsRemaining}
+      s`}
+    </>
   );
 };

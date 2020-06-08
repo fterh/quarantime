@@ -164,8 +164,11 @@ class App extends React.Component<Props, State> {
     }
 
     return (
-      <div className="App" style={{ margin: "2rem 0" }}>
-        <Container fluid="sm" style={{ textAlign: "center" }}>
+      <div className="App" style={{ margin: "2rem" }}>
+        <h1 style={{ margin: "1rem auto", textAlign: "center" }}>
+          quarantime: progressive countdown
+        </h1>
+        <Container fluid="sm">
           <ProgressBar
             style={{ height: "2rem", marginBottom: "3rem" }}
             label={`${percentageCompleted}%`}
@@ -177,18 +180,20 @@ class App extends React.Component<Props, State> {
           {this.state.inErrorState ? (
             <Alert variant="danger">You have entered invalid values</Alert>
           ) : (
-            <Countdown
-              now={this.state.now}
-              startTime={this.state.startTime}
-              endTime={this.state.endTime}
-            />
+            <div style={{ textAlign: "center" }}>
+              <h2>
+                <Countdown
+                  now={this.state.now}
+                  startTime={this.state.startTime}
+                  endTime={this.state.endTime}
+                />
+              </h2>
+            </div>
           )}
-          <Container style={{ margin: "1rem" }}>
-            <InputGroup style={{ marginBottom: "1rem" }}>
-              <div style={{ display: "flex", margin: "auto" }}>
-                <InputGroup.Prepend>
-                  <InputGroup.Text>Start time</InputGroup.Text>
-                </InputGroup.Prepend>
+          <Container style={{ margin: "2rem auto", maxWidth: "540px" }}>
+            <InputGroup style={{ display: "block", marginBottom: "1rem" }}>
+              <div>
+                <p style={{ margin: 0 }}>Start</p>
                 <DatePicker
                   selected={this.state.startTime}
                   onChange={this.handleInput("startTime")}
@@ -200,11 +205,9 @@ class App extends React.Component<Props, State> {
                 />
               </div>
             </InputGroup>
-            <InputGroup>
-              <div style={{ display: "flex", margin: "auto" }}>
-                <InputGroup.Prepend>
-                  <InputGroup.Text>End time</InputGroup.Text>
-                </InputGroup.Prepend>
+            <InputGroup style={{ display: "block" }}>
+              <div>
+                <p style={{ margin: 0 }}>End</p>
                 <DatePicker
                   selected={this.state.endTime}
                   onChange={this.handleInput("endTime")}
