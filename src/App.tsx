@@ -1,6 +1,7 @@
 import React from "react";
 import queryString from "query-string";
 
+import Alert from "react-bootstrap/alert";
 import Container from "react-bootstrap/Container";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -12,6 +13,7 @@ interface Props {}
 interface State {
   startTime: number | null;
   endTime: number | null;
+  inErrorState: boolean;
 }
 
 class App extends React.Component<Props, State> {
@@ -20,6 +22,7 @@ class App extends React.Component<Props, State> {
     this.state = {
       startTime: null,
       endTime: null,
+      inErrorState: false,
     };
   }
 
@@ -34,7 +37,7 @@ class App extends React.Component<Props, State> {
   readQueryStrings() {
     const parsed = queryString.parse(window.location.hash);
 
-    if (this.isValidState(parsed)) {
+    if (this.isValidParsedQueryStrings(parsed)) {
       return {
         startTime: this.validateAndRefineTimestamp(parsed["s"]),
         endTime: this.validateAndRefineTimestamp(parsed["e"]),
@@ -44,7 +47,7 @@ class App extends React.Component<Props, State> {
     return null;
   }
 
-  isValidState(parsed: queryString.ParsedQuery<string>) {
+  isValidParsedQueryStrings(parsed: queryString.ParsedQuery<string>) {
     return (
       parsed["s"] != null &&
       !isNaN(Number(parsed["s"])) &&
@@ -53,18 +56,43 @@ class App extends React.Component<Props, State> {
     );
   }
 
+  validateState() {
+    if (this.state.startTime == null || this.state.endTime == null) {
+      return;
+    }
+
+    if (this.state.startTime > this.state.endTime) {
+      this.setState({
+        ...this.state,
+        inErrorState: true,
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        inErrorState: false,
+      });
+    }
+  }
+
   componentDidMount() {
     const maybeState = this.readQueryStrings();
     if (maybeState) {
-      this.setState(maybeState);
+      this.setState(maybeState, this.validateState);
     }
   }
 
   calculatePercentageCompleted(startTime: number, endTime: number) {
-    const now = Math.min(Date.now(), endTime);
-    const completed = (now - startTime) / (endTime - startTime);
+    // Force now to be within the start - end range
+    // to prevent weird return values (<0 or >100)
+    const now = Math.max(Math.min(Date.now(), endTime), startTime);
 
-    return Math.floor(completed * 10000) / 100;
+    // Prevent infinity return value
+    if (endTime === startTime) {
+      return 100;
+    }
+
+    const completed = (now - startTime) / (endTime - startTime);
+    return Math.min(Math.floor(completed * 10000) / 100, 100);
   }
 
   handleInput(id: string) {
@@ -81,7 +109,7 @@ class App extends React.Component<Props, State> {
         [id]: maybeNewTimestamp,
       };
 
-      this.setState(newState);
+      this.setState(newState, this.validateState);
     };
   }
 
@@ -96,15 +124,20 @@ class App extends React.Component<Props, State> {
 
     return (
       <div className="App" style={{ margin: "2rem 0" }}>
-        <Container>
+        <Container fluid="md">
           <ProgressBar
-            style={{ height: "2rem" }}
+            style={{ height: "2rem", marginBottom: "3rem" }}
             label={`${percentageCompleted}%`}
             now={percentageCompleted}
             striped
             variant="success"
           />
-          <InputGroup>
+
+          {this.state.inErrorState && (
+            <Alert variant="danger">You have entered invalid values</Alert>
+          )}
+
+          <InputGroup style={{ marginBottom: "1rem" }}>
             <InputGroup.Prepend>
               <InputGroup.Text>Start</InputGroup.Text>
             </InputGroup.Prepend>
