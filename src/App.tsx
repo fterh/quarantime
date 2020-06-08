@@ -1,5 +1,5 @@
 import React from "react";
-import queryString from "query-string";
+import { Base64 } from "js-base64";
 
 import Alert from "react-bootstrap/alert";
 import Container from "react-bootstrap/Container";
@@ -13,52 +13,27 @@ import "./overrides.css";
 
 interface Props {}
 
-interface State {
+interface EncodableState {
   startTime: Date | null;
   endTime: Date | null;
-  inErrorState: boolean;
 }
+
+type State = EncodableState & {
+  now: Date;
+  inErrorState: boolean;
+};
 
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const now = Date.now();
+    const now = new Date();
     const minuteInMs = 60 * 1000;
     this.state = {
-      startTime: new Date(now),
-      endTime: new Date(now + minuteInMs),
+      now: now,
+      startTime: now,
+      endTime: new Date(now.getTime() + minuteInMs),
       inErrorState: false,
     };
-  }
-
-  validateAndRefineTimestamp(rawTimestamp: any) {
-    if (isNaN(Number(rawTimestamp))) {
-      return null;
-    }
-
-    return new Date(rawTimestamp);
-  }
-
-  readQueryStrings() {
-    const parsed = queryString.parse(window.location.hash);
-
-    if (this.isValidParsedQueryStrings(parsed)) {
-      return {
-        startTime: this.validateAndRefineTimestamp(parsed["s"]),
-        endTime: this.validateAndRefineTimestamp(parsed["e"]),
-      };
-    }
-
-    return null;
-  }
-
-  isValidParsedQueryStrings(parsed: queryString.ParsedQuery<string>) {
-    return (
-      parsed["s"] != null &&
-      !isNaN(Number(parsed["s"])) &&
-      parsed["e"] != null &&
-      !isNaN(Number(parsed["e"]))
-    );
   }
 
   validateState() {
@@ -79,11 +54,64 @@ class App extends React.Component<Props, State> {
     }
   }
 
-  componentDidMount() {
-    const maybeState = this.readQueryStrings();
-    if (maybeState) {
-      this.setState(maybeState, this.validateState);
+  isLegalState(state: any) {
+    const notIllegal =
+      state["startTime"] &&
+      !isNaN(Date.parse(state["startTime"])) &&
+      state["endTime"] &&
+      !isNaN(Date.parse(state["endTime"]));
+    return notIllegal;
+  }
+
+  encodeHashFragment() {
+    const state = Object.assign({}, this.state) as State;
+
+    // Strip unnecessary properties
+    delete state["now"];
+    delete state["inErrorState"];
+
+    const json = JSON.stringify(state);
+    window.location.hash = Base64.encode(json);
+  }
+
+  decodeHashFragment(): EncodableState | null {
+    const hash = window.location.hash;
+    const decoded = Base64.decode(hash);
+    const state = JSON.parse(decoded);
+
+    if (this.isLegalState(state)) {
+      return {
+        startTime: new Date(state["startTime"]),
+        endTime: new Date(state["endTime"]),
+      };
     }
+
+    return null;
+  }
+
+  postSetState() {
+    this.validateState();
+    this.encodeHashFragment();
+  }
+
+  componentDidMount() {
+    let maybeState;
+    try {
+      maybeState = this.decodeHashFragment();
+    } catch {
+      // Do nothing
+    }
+    if (maybeState) {
+      this.setState(
+        {
+          ...this.state,
+          ...maybeState,
+        },
+        this.validateState
+      );
+    }
+
+    this.encodeHashFragment();
   }
 
   calculatePercentageCompleted(startTime: Date, endTime: Date) {
@@ -111,7 +139,7 @@ class App extends React.Component<Props, State> {
         [id]: newTime,
       };
 
-      this.setState(newState, this.validateState);
+      this.setState(newState, this.postSetState);
     };
   }
 
@@ -149,7 +177,7 @@ class App extends React.Component<Props, State> {
                 onChange={this.handleInput("startTime")}
                 showTimeSelect
                 timeFormat="HH:mm"
-                timeIntervals={1}
+                timeIntervals={15}
                 timeCaption="time"
                 dateFormat="MMMM d, yyyy h:mm aa"
               />
@@ -165,7 +193,7 @@ class App extends React.Component<Props, State> {
                 onChange={this.handleInput("endTime")}
                 showTimeSelect
                 timeFormat="HH:mm"
-                timeIntervals={1}
+                timeIntervals={15}
                 timeCaption="time"
                 dateFormat="MMMM d, yyyy h:mm aa"
               />
