@@ -165,9 +165,11 @@ class App extends React.Component<Props, State> {
 
     return (
       <div className="App" style={{ margin: "2rem" }}>
-        <h1 style={{ margin: "1rem auto", textAlign: "center" }}>
-          quarantime: progressive countdown
-        </h1>
+        <div style={{ margin: "1rem auto", textAlign: "center" }}>
+          <h1>quarantime</h1>
+          <h2>visually progressive countdown</h2>
+        </div>
+
         <Container fluid="sm">
           <ProgressBar
             style={{ height: "2rem", marginBottom: "3rem" }}
