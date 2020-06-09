@@ -9,6 +9,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import DatePicker from "react-datepicker";
 import Countdown from "./Countdown";
+import DatetimeInput from "./DatetimeInput";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -195,52 +196,19 @@ class App extends React.Component<Props, State> {
             </div>
           )}
           <Container style={{ margin: "2rem auto" }}>
-            <Row className="justify-content-center">
-              <Col xs="auto">
-                <InputGroup style={{ display: "block", marginBottom: "1rem" }}>
-                  <Row className="justify-content-center">
-                    <p style={{ margin: 0 }}>Start</p>
-                  </Row>
-                  <Row className="justify-content-center">
-                    <DatePicker
-                      selected={this.state.startTime}
-                      onChange={this.handleInput("startTime")}
-                      dateFormat="MMMM d, yyyy"
-                    />
-                    <DatePicker
-                      showTimeSelect
-                      showTimeSelectOnly
-                      selected={this.state.startTime}
-                      onChange={this.handleInput("startTime")}
-                      dateFormat="h:mm aa"
-                    />
-                  </Row>
-                </InputGroup>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col xs="auto">
-                <InputGroup style={{ display: "block" }}>
-                  <Row className="justify-content-center">
-                    <p style={{ margin: 0 }}>End</p>
-                  </Row>
-                  <Row className="justify-content-center">
-                    <DatePicker
-                      selected={this.state.endTime}
-                      onChange={this.handleInput("endTime")}
-                      dateFormat="MMMM d, yyyy"
-                    />
-                    <DatePicker
-                      showTimeSelect
-                      showTimeSelectOnly
-                      selected={this.state.endTime}
-                      onChange={this.handleInput("endTime")}
-                      dateFormat="h:mm aa"
-                    />
-                  </Row>
-                </InputGroup>
-              </Col>
-            </Row>
+            <DatetimeInput
+              label="Start"
+              stateIdentifier="startTime"
+              time={this.state.startTime}
+              onChange={this.handleInput("startTime")}
+            />
+
+            <DatetimeInput
+              label="End"
+              stateIdentifier="endTime"
+              time={this.state.endTime}
+              onChange={this.handleInput("endTime")}
+            />
           </Container>
         </Container>
       </div>
