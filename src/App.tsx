@@ -120,9 +120,10 @@ class App extends React.Component<Props, State> {
         },
         this.validateState
       );
+    } else {
+      this.encodeHashFragment();
     }
 
-    this.encodeHashFragment();
     setInterval(() => {
       this.tick();
     }, 1000);
