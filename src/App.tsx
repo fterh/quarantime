@@ -1,10 +1,12 @@
 import React from "react";
 import { Base64 } from "js-base64";
 
-import Alert from "react-bootstrap/alert";
+import Alert from "react-bootstrap/Alert";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import InputGroup from "react-bootstrap/InputGroup";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import Row from "react-bootstrap/Row";
 import DatePicker from "react-datepicker";
 import Countdown from "./Countdown";
 
@@ -170,7 +172,7 @@ class App extends React.Component<Props, State> {
           <h2>visually progressive countdown</h2>
         </div>
 
-        <Container fluid="sm">
+        <Container>
           <ProgressBar
             style={{ height: "2rem", marginBottom: "3rem" }}
             label={`${percentageCompleted}%`}
@@ -192,35 +194,53 @@ class App extends React.Component<Props, State> {
               </h2>
             </div>
           )}
-          <Container style={{ margin: "2rem auto", maxWidth: "540px" }}>
-            <InputGroup style={{ display: "block", marginBottom: "1rem" }}>
-              <div>
-                <p style={{ margin: 0 }}>Start</p>
-                <DatePicker
-                  selected={this.state.startTime}
-                  onChange={this.handleInput("startTime")}
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  timeCaption="time"
-                  dateFormat="MMMM d, yyyy h:mm aa"
-                />
-              </div>
-            </InputGroup>
-            <InputGroup style={{ display: "block" }}>
-              <div>
-                <p style={{ margin: 0 }}>End</p>
-                <DatePicker
-                  selected={this.state.endTime}
-                  onChange={this.handleInput("endTime")}
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  timeCaption="time"
-                  dateFormat="MMMM d, yyyy h:mm aa"
-                />
-              </div>
-            </InputGroup>
+          <Container style={{ margin: "2rem auto" }}>
+            <Row className="justify-content-center">
+              <Col xs="auto">
+                <InputGroup style={{ display: "block", marginBottom: "1rem" }}>
+                  <Row className="justify-content-center">
+                    <p style={{ margin: 0 }}>Start</p>
+                  </Row>
+                  <Row className="justify-content-center">
+                    <DatePicker
+                      selected={this.state.startTime}
+                      onChange={this.handleInput("startTime")}
+                      dateFormat="MMMM d, yyyy"
+                    />
+                    <DatePicker
+                      showTimeSelect
+                      showTimeSelectOnly
+                      selected={this.state.startTime}
+                      onChange={this.handleInput("startTime")}
+                      dateFormat="h:mm aa"
+                    />
+                  </Row>
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row className="justify-content-center">
+              <Col xs="auto">
+                <InputGroup style={{ display: "block" }}>
+                  <Row className="justify-content-center">
+                    <p style={{ margin: 0 }}>End</p>
+                  </Row>
+                  <Row className="justify-content-center">
+                    <DatePicker
+                      selected={this.state.endTime}
+                      onChange={this.handleInput("endTime")}
+                      dateFormat="MMMM d, yyyy"
+                    />
+                    <DatePicker
+                      showTimeSelect
+                      showTimeSelectOnly
+                      selected={this.state.endTime}
+                      onChange={this.handleInput("endTime")}
+                      dateFormat="h:mm aa"
+                    />
+                  </Row>
+                </InputGroup>
+              </Col>
+            </Row>
           </Container>
         </Container>
       </div>

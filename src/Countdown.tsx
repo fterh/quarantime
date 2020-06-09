@@ -60,8 +60,7 @@ export default (props: CountdownProps) => {
   return (
     <>
       {`${countdownDetails.daysRemaining}d ${countdownDetails.hoursRemaining}h
-      ${countdownDetails.minutesRemaining}m ${countdownDetails.secondsRemaining}
-      s`}
+      ${countdownDetails.minutesRemaining}m ${countdownDetails.secondsRemaining}s`}
     </>
   );
 };
