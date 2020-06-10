@@ -24,18 +24,22 @@ export default (props: DatetimeInputProps) => {
             <p style={{ margin: 0 }}>{props.label}</p>
           </Row>
           <Row className="justify-content-center">
-            <DatePicker
-              selected={props.time}
-              onChange={props.onChange}
-              dateFormat="MMMM d, yyyy"
-            />
-            <DatePicker
-              showTimeSelect
-              showTimeSelectOnly
-              selected={props.time}
-              onChange={props.onChange}
-              dateFormat="h:mm aa"
-            />
+            <div style={{ margin: "2px" }}>
+              <DatePicker
+                selected={props.time}
+                onChange={props.onChange}
+                dateFormat="MMMM d, yyyy"
+              />
+            </div>
+            <div style={{ margin: "2px" }}>
+              <DatePicker
+                showTimeSelect
+                showTimeSelectOnly
+                selected={props.time}
+                onChange={props.onChange}
+                dateFormat="h:mm aa"
+              />
+            </div>
           </Row>
         </InputGroup>
       </Col>
