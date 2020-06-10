@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Countdown from "./Countdown";
 import DatetimeInput from "./DatetimeInput";
+import Footer from "./Footer";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -208,6 +209,7 @@ class App extends React.Component<Props, State> {
             />
           </Container>
         </Container>
+        <Footer />
       </div>
     );
   }
